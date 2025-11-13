@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.mealPlanRoute = void 0;
+const express_1 = require("express");
+const plan_controller_1 = require("./plan.controller");
+const authentication_1 = require("../../middleware/authentication");
+exports.mealPlanRoute = (0, express_1.Router)();
+exports.mealPlanRoute.post('/create-meal', authentication_1.authentication, plan_controller_1.createMealPlanController);
+exports.mealPlanRoute.get('/get-meal-plan', authentication_1.authentication, plan_controller_1.getMealPlanController);
+exports.mealPlanRoute.patch('/delete-meal-plan', authentication_1.authentication, plan_controller_1.deleteMealPlanController);
+exports.mealPlanRoute.patch('/add-meal-plan', authentication_1.authentication, plan_controller_1.addRecipeInMealPlanController);
