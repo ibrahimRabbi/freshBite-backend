@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { generateOtpCode } from "../../helper/otpGenarator";
 import nodeMailer from "nodemailer";
 import { templeteString } from "../../helper/emailTemplete";
+import { uploadImage } from "../../helper/imageUploader";
 
 
 
@@ -129,5 +130,37 @@ export const verifyOtpServices = async (req: Request) => {
 
 
 
+
+}
+
+
+export const updateUserServices = async (req: Request) => {
+    const data = JSON.parse(req?.body.data)
+
+    const imageNamePrefix = `${req?.user?.fullName}_${Math.random().toString().split('.')[1]}`;
+    const imagePath = req.file?.path;
+ 
+    if (imagePath) {
+        
+        const result = await uploadImage(imagePath, imageNamePrefix);
+        data.profileImage = result.secure_url;
+    }
+     
+
+    const updating = await userModel.findByIdAndUpdate(req?.user?._id, data, { new: true, runValidators: true, context: 'query' })
+    if (!updating) {
+        throw new Error('faild to update user')
+    }
+
+
+    const credentials = {
+        name: updating.fullName,
+        email: updating.email,
+        role: updating.role,
+        planType: updating.planType
+    }
+
+    const accessToken = jwt.sign(credentials, envData.secretKey as string, { expiresIn: '12d' })
+    return accessToken
 
 }

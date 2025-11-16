@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addRecipeInMealPlanController = exports.deleteMealPlanController = exports.getMealPlanController = exports.createMealPlanController = void 0;
+exports.deleteMealPlanController = exports.getMealPlanController = exports.createMealPlanController = void 0;
 const catchAsync_1 = require("../../helper/catchAsync");
 const plan_services_1 = require("./plan.services");
 const http_status_1 = __importDefault(require("http-status"));
@@ -31,9 +31,9 @@ exports.createMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next)
 }));
 exports.getMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const finding = yield plan_model_1.default.findOne({ userId: (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id }, { meals: { $elemMatch: { date: new Date((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.date) } } });
+    const finding = yield plan_model_1.default.findOne({ userId: (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id, date: new Date((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.date) });
     if (!finding) {
-        throw new Error('faild to get meal plan');
+        throw new Error('this date of data is not exist');
     }
     res.status(http_status_1.default.OK).json({
         success: true,
@@ -43,68 +43,87 @@ exports.getMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next) =>
     });
 }));
 exports.deleteMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
-    const finding = yield plan_model_1.default.findOneAndUpdate({
-        userId: (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id,
-        'meals.date': new Date((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.date),
-    }, {
-        $pull: {
-            'meals.$.recipes': (_c = req === null || req === void 0 ? void 0 : req.body) === null || _c === void 0 ? void 0 : _c.recipeId
-        }
-    }, { new: true });
-    if (!finding) {
+    var _a;
+    const deletign = yield plan_model_1.default.findByIdAndUpdate(req === null || req === void 0 ? void 0 : req.params.id, { $pull: { recipes: (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.recipeId } }, { new: true });
+    if (!deletign) {
         throw new Error('faild to deleted meal plan');
     }
     res.status(http_status_1.default.OK).json({
         success: true,
         status: http_status_1.default.OK,
         message: 'meal plan deleted successfully',
-        data: finding
+        data: deletign
     });
 }));
-exports.addRecipeInMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
-    const checkExistancy = yield Promise.all(((_b = (_a = req.body) === null || _a === void 0 ? void 0 : _a.meals) === null || _b === void 0 ? void 0 : _b.map((object) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a, _b;
-        const finding = yield plan_model_1.default.findOne({
-            userId: req === null || req === void 0 ? void 0 : req.user._id,
-            'meals.date': object === null || object === void 0 ? void 0 : object.date,
-            'meals.meal_time': object === null || object === void 0 ? void 0 : object.meal_time,
-            'meals.recipes': { $in: (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.recipes }
-        }).lean();
-        if (finding) {
-            throw new Error('this plan already created for this date');
-        }
-        else {
-            const plans = Object.assign(Object.assign({}, object), { recipes: [(_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.recipes], comments: [] });
-            // if(finding.meals.recipes.includes(req?.body?.recipes)){
-            // }
-            const pushingRecipe = yield plan_model_1.default.findOneAndUpdate({ userId: req === null || req === void 0 ? void 0 : req.user._id }, { $push: { meals: plans } }, { new: true });
-            return pushingRecipe;
-        }
-        // } else {
-        //    throw new Error('this plan already created for this date')
-        //    // const updatedMealPlan = await mealPlanModel.findOneAndUpdate(
-        //    //    {
-        //    //       userId: req?.user._id,
-        //    //       'meals.date': object?.date,
-        //    //       'meals.meal_time': object?.meal_time
-        //    //    },
-        //    //    {
-        //    //       $push: { 'meals.$.recipes': req?.body?.recipes }
-        //    //    },
-        //    //    { new: true }
-        //    // );
-        //    // return updatedMealPlan;
-        // }
-    }))) || []);
-    if (!checkExistancy) {
-        throw new Error('faild to add meal plan');
-    }
-    res.status(http_status_1.default.OK).json({
-        success: true,
-        status: http_status_1.default.OK,
-        message: 'meal plan deleted successfully',
-        data: checkExistancy
-    });
-}));
+// export const addRecipeInMealPlanController: RequestHandler = catchAsync(async (req, res, next) => {
+//    // const checkExistancy = await Promise.all(
+//    //    req.body?.meals?.map(async (object: Tmeals) => {
+//    //       const finding = await mealPlanModel.findOne({
+//    //          userId: req?.user._id,
+//    //          'meals.date': object?.date,
+//    //          'meals.meal_time': object?.meal_time,
+//    //       }).lean() as { meals: Tmeals[] } | null;
+//    //       const recipeId = new mongoose.Types.ObjectId(req?.body?.recipes);
+//    //       if (finding && finding.meals) {
+//    //          for (const value of finding.meals) {
+//    //             if (value.recipes.some((recipe: mongoose.Types.ObjectId) => recipe.equals(recipeId))) {
+//    //                throw new Error('This plan already created for this date');
+//    //             }
+//    //          }
+//    //          const updatedMealPlan = await mealPlanModel.findOneAndUpdate(
+//    //             {
+//    //                userId: req?.user._id,
+//    //                'meals.date': object?.date,
+//    //                'meals.meal_time': object?.meal_time
+//    //             },
+//    //             {
+//    //                $push: { 'meals.$.recipes': recipeId }
+//    //             },
+//    //             { new: true }
+//    //          );
+//    //          return updatedMealPlan;
+//    //       } else {
+//    //          const plans = {
+//    //             ...object,
+//    //             recipes: [recipeId],
+//    //          };
+//    //          const pushingRecipe = await mealPlanModel.findOneAndUpdate(
+//    //             { userId: req?.user._id },
+//    //             { $push: { meals: plans } },
+//    //             { new: true }
+//    //          );
+//    //          return pushingRecipe;
+//    //       }
+//    //    })
+//    // );
+//    const checkprepList = await PrepListModel.findOne({ userId: req?.user?._id, date: req?.body.prepList?.date })
+//    const prepData: TprepList = {
+//       userId: req?.user._id,
+//       ...req?.body?.prepList,
+//       recipes: [{ recipeId: req?.body?.recipes, isDone: false }],
+//       isDeleted: false
+//    };
+//    if (checkprepList) {
+//       const updateList = await PrepListModel.findOneAndUpdate(
+//          { userId: req?.user?._id, date: req?.body.prepList?.date },
+//          { $push: { recipes: { recipeId: req?.body?.recipes, isDone: false } } },
+//          { new: true })
+//       if (!updateList) {
+//          throw new Error('faild to update prep List')
+//       }
+//    } else {
+//       const createList = await PrepListModel.create(prepData);
+//       if (!createList) {
+//          throw new Error('faild to create prep List')
+//       }
+//    }
+//    // if (!checkExistancy) {
+//    //    throw new Error('faild to add meal plan')
+//    // }
+//    res.status(status.OK).json({
+//       success: true,
+//       status: status.OK,
+//       message: 'plan has been updated successfully',
+//       // data: checkExistancy
+//    })
+// })

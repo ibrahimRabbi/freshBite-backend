@@ -33,23 +33,3 @@ export const createUserServices = async (payload: Tuser) => {
 
 }
 
-export const updateUserServices = async (req: Request) => {
-
-
-    const updating = await userModel.findOneAndUpdate({ email: req?.user?.email }, req.body, { new: true, runValidators: true, context: 'query' })
-    if (!updating) {
-        throw new Error('faild to create user')
-    }
-
-
-    const credentials = {
-        name: updating.fullName,
-        email: updating.email,
-        role: updating.role,
-        planType: updating.planType
-    }
-
-    const accessToken = jwt.sign(credentials, envData.secretKey as string, { expiresIn: '12d' })
-    return accessToken
-
-}

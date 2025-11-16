@@ -1,46 +1,70 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
+import { Tcomments, TmealPlan } from "./plan.intrface";
 
 
-const TcommentsSchema: Schema = new Schema({
+const TcommentsSchema = new Schema<Tcomments>({
   text: {
     type: String,
     required: [true, 'Comment text is required'],
   },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  }
+  isDeleted: { type: "Boolean", default: false }
 });
 
 
-const TmealsSchema: Schema = new Schema({
+
+
+
+const mealPlanSchema = new Schema<TmealPlan>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: [true, 'User ID is required'],
+    ref: 'users',
+  },
+
   date: {
     type: Date,
-    required: [true, 'Meal date is required'],
+    required: [true, 'Date is required'],
   },
+
   serving: {
     type: Number,
-    required: [true, 'Serving number is required'],
+    required: [true, 'Serving is required'],
+    min: [1, 'Serving must be at least 1'],
+    max: [10, 'Serving cannot exceed 10'],
   },
+
   meal_time: {
     type: String,
     required: [true, 'Meal time is required'],
-    enum: {
-      values : ['breakfast', 'lunch', 'dinner', 'snack'],
-      message : '{VALUE} is not valid meal time'
+    enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+    message: '{VALUE} is not a valid meal time',
+  },
+
+  recipes: {
+    type: [Schema.Types.ObjectId],
+    required: [true, 'At least one recipe is required'],
+    ref: 'recipes',
+    validate: {
+      validator: function (value: any) {
+        return value.length > 0;
+      },
+      message: 'At least one recipe is required',
     },
   },
-  recipes: {type: [Types.ObjectId],ref: 'recipes', required: [true, 'Recipes are required']},
-  comments: {type: [TcommentsSchema],default: []},
+
+  comments: { type: [TcommentsSchema], default: [] },
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 
-const MealPlanSchema: Schema = new Schema({
-  userId: { type: Types.ObjectId, ref: 'users',  required: [true, 'User ID is required'], },
-  meals: {type: [TmealsSchema], required: [true, 'Meals are required'], },
-  isDeleted: { type: Boolean,default: false,}
-}, {timestamps: true,});
+const mealPlanModel = mongoose.model('mealPlan', mealPlanSchema);
 
 
-const mealPlanModel = mongoose.model('mealPlan', MealPlanSchema);
+
+
+
 export default mealPlanModel;

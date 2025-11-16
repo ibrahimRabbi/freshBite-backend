@@ -81,7 +81,7 @@ const userSchema = new Schema<Tuser>({
     },
     isActive: { type: Boolean, default: true, },
     isDeleted: { type: Boolean, default: false, }
-}, { timestamps: true, strict: 'throw' })
+}, { timestamps: true, strict: 'throw'})
 
 
 

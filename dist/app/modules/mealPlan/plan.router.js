@@ -7,5 +7,5 @@ const authentication_1 = require("../../middleware/authentication");
 exports.mealPlanRoute = (0, express_1.Router)();
 exports.mealPlanRoute.post('/create-meal', authentication_1.authentication, plan_controller_1.createMealPlanController);
 exports.mealPlanRoute.get('/get-meal-plan', authentication_1.authentication, plan_controller_1.getMealPlanController);
-exports.mealPlanRoute.patch('/delete-meal-plan', authentication_1.authentication, plan_controller_1.deleteMealPlanController);
-exports.mealPlanRoute.patch('/add-meal-plan', authentication_1.authentication, plan_controller_1.addRecipeInMealPlanController);
+exports.mealPlanRoute.delete('/delete-meal-plan/:id', authentication_1.authentication, plan_controller_1.deleteMealPlanController);
+// mealPlanRoute.patch('/add-meal-plan',authentication, addRecipeInMealPlanController)

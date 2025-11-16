@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserController = exports.getAllUserController = exports.getSingleUserController = exports.getMyProfileController = exports.updateUserController = exports.createUserController = void 0;
+exports.deleteUserController = exports.getAllUserController = exports.getSingleUserController = exports.createUserController = void 0;
 const user_services_1 = require("./user.services");
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = require("../../helper/catchAsync");
@@ -27,26 +27,6 @@ exports.createUserController = (0, catchAsync_1.catchAsync)((req, res, next) => 
         status: http_status_1.default.OK,
         message: 'user created successfully',
         token: createUser
-    });
-}));
-exports.updateUserController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedUser = yield (0, user_services_1.updateUserServices)(req);
-    if (!updatedUser) {
-        throw new Error('faild to create user');
-    }
-    res.status(http_status_1.default.OK).json({
-        success: true,
-        status: http_status_1.default.OK,
-        message: 'user updated successfully',
-        token: updatedUser
-    });
-}));
-exports.getMyProfileController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(http_status_1.default.OK).json({
-        success: true,
-        status: http_status_1.default.OK,
-        message: 'profile retrived successfully',
-        data: req.user
     });
 }));
 exports.getSingleUserController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

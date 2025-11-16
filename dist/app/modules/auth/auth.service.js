@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyOtpServices = exports.forgetPasswordService = exports.signInService = void 0;
+exports.updateUserServices = exports.verifyOtpServices = exports.forgetPasswordService = exports.signInService = void 0;
 const config_1 = require("../../config/config");
 const user_model_1 = __importDefault(require("../user/user.model"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const otpGenarator_1 = require("../../helper/otpGenarator");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const emailTemplete_1 = require("../../helper/emailTemplete");
+const imageUploader_1 = require("../../helper/imageUploader");
 const signInService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const checkExistancy = yield user_model_1.default.findOne({ email: payload.email }).select('name email password role planType isDeleted');
     if (!checkExistancy) {
@@ -114,3 +115,26 @@ const verifyOtpServices = (req) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.verifyOtpServices = verifyOtpServices;
+const updateUserServices = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
+    const data = JSON.parse(req === null || req === void 0 ? void 0 : req.body.data);
+    const imageNamePrefix = `${(_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.fullName}_${Math.random().toString().split('.')[1]}`;
+    const imagePath = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
+    if (imagePath) {
+        const result = yield (0, imageUploader_1.uploadImage)(imagePath, imageNamePrefix);
+        data.profileImage = result.secure_url;
+    }
+    const updating = yield user_model_1.default.findByIdAndUpdate((_c = req === null || req === void 0 ? void 0 : req.user) === null || _c === void 0 ? void 0 : _c._id, data, { new: true, runValidators: true, context: 'query' });
+    if (!updating) {
+        throw new Error('faild to update user');
+    }
+    const credentials = {
+        name: updating.fullName,
+        email: updating.email,
+        role: updating.role,
+        planType: updating.planType
+    };
+    const accessToken = jsonwebtoken_1.default.sign(credentials, config_1.envData.secretKey, { expiresIn: '12d' });
+    return accessToken;
+});
+exports.updateUserServices = updateUserServices;
