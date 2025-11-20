@@ -32,7 +32,7 @@ const createMealPlanServices = (req) => __awaiter(void 0, void 0, void 0, functi
             };
         });
         const prepData = Object.assign(Object.assign({ userId: req === null || req === void 0 ? void 0 : req.user._id }, (_c = req === null || req === void 0 ? void 0 : req.body) === null || _c === void 0 ? void 0 : _c.prepList), { recipes: [{ recipeId: (_d = req === null || req === void 0 ? void 0 : req.body) === null || _d === void 0 ? void 0 : _d.recipes, isDone: false }], isDeleted: false });
-        //meal plan oparation
+        // meal plan oparation
         const createdMeal = yield Promise.all(mealPlanData.map((value) => __awaiter(void 0, void 0, void 0, function* () {
             var _a, _b;
             const checkMealPlan = yield plan_model_1.default.findOne({

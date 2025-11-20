@@ -135,6 +135,7 @@ export const verifyOtpServices = async (req: Request) => {
 
 
 export const updateUserServices = async (req: Request) => {
+    
     const data = JSON.parse(req?.body.data)
 
     const imageNamePrefix = `${req?.user?.fullName}_${Math.random().toString().split('.')[1]}`;

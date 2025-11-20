@@ -7,6 +7,7 @@ import PrepListModel from "../prepList/prep.model";
 import { TprepList } from "../prepList/prep.interface";
 import mealPlanModel from "./plan.model";
 
+
 export const createMealPlanController: RequestHandler = catchAsync(async (req, res, next) => {
 
    const creating = await createMealPlanServices(req)
@@ -25,7 +26,7 @@ export const createMealPlanController: RequestHandler = catchAsync(async (req, r
 
 export const getMealPlanController: RequestHandler = catchAsync(async (req, res, next) => {
 
-   const finding = await mealPlanModel.findOne({ userId: req?.user?._id, date: new Date(req?.body?.date as string) });
+   const finding = await mealPlanModel.find({ userId: req?.user?._id, date: new Date(req?.body?.date as string) }).populate('recipes');
 
    if (!finding) {
       throw new Error('this date of data is not exist')
@@ -42,8 +43,8 @@ export const getMealPlanController: RequestHandler = catchAsync(async (req, res,
 
 export const deleteMealPlanController: RequestHandler = catchAsync(async (req, res, next) => {
 
-  
-   const deletign = await mealPlanModel.findByIdAndUpdate(req?.params.id, {$pull:{recipes:req?.body?.recipeId}}, {new:true})
+
+   const deletign = await mealPlanModel.findByIdAndUpdate(req?.params.id, { $pull: { recipes: req?.body?.recipeId } }, { new: true })
 
    if (!deletign) {
       throw new Error('faild to deleted meal plan')

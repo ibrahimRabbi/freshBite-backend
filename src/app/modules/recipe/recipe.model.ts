@@ -4,7 +4,7 @@ import { Recipe, Tinstruction } from './recipe.inteface';
 
 
 // RecipeIngredient Schema
-const RecipeIngredientSchema: Schema = new Schema({
+export const RecipeIngredientSchema: Schema = new Schema({
     name: {
         type: String,
         required: [true, 'Ingredient name is required'],

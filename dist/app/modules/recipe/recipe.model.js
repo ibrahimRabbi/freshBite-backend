@@ -33,10 +33,10 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.recipeModel = void 0;
+exports.recipeModel = exports.RecipeIngredientSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 // RecipeIngredient Schema
-const RecipeIngredientSchema = new mongoose_1.Schema({
+exports.RecipeIngredientSchema = new mongoose_1.Schema({
     name: {
         type: String,
         required: [true, 'Ingredient name is required'],
@@ -162,7 +162,7 @@ const RecipeSchema = new mongoose_1.Schema({
         min: [1, 'Serving size must be at least 1']
     },
     ingredients: {
-        type: [RecipeIngredientSchema],
+        type: [exports.RecipeIngredientSchema],
         required: [true, 'Ingredients are required'],
         validate: {
             validator: function (value) {

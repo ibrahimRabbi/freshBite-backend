@@ -31,7 +31,7 @@ exports.createMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next)
 }));
 exports.getMealPlanController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const finding = yield plan_model_1.default.findOne({ userId: (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id, date: new Date((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.date) });
+    const finding = yield plan_model_1.default.find({ userId: (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id, date: new Date((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.date) }).populate('recipes');
     if (!finding) {
         throw new Error('this date of data is not exist');
     }

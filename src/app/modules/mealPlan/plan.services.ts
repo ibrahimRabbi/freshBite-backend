@@ -35,7 +35,7 @@ export const createMealPlanServices = async (req: Request) => {
 
 
 
-        //meal plan oparation
+        // meal plan oparation
         const createdMeal = await Promise.all(mealPlanData.map(async (value: Partial<TmealPlan>) => {
             const checkMealPlan = await mealPlanModel.findOne({
                 userId: req?.user?._id,
@@ -92,6 +92,7 @@ export const createMealPlanServices = async (req: Request) => {
         await session.commitTransaction();
         await session.endSession()
         return createdMeal;
+       
 
     } catch (error: any) {
         await session.abortTransaction()

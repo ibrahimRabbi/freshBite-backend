@@ -12,11 +12,10 @@ const TcommentsSchema = new Schema<Tcomments>({
 
 
 
-
-
 const mealPlanSchema = new Schema<TmealPlan>({
   userId: {
     type: Schema.Types.ObjectId,
+    index:true,
     required: [true, 'User ID is required'],
     ref: 'users',
   },

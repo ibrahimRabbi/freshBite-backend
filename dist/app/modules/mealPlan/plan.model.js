@@ -44,6 +44,7 @@ const TcommentsSchema = new mongoose_1.Schema({
 const mealPlanSchema = new mongoose_1.Schema({
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,
+        index: true,
         required: [true, 'User ID is required'],
         ref: 'users',
     },

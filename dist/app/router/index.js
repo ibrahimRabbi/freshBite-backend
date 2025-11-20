@@ -6,11 +6,17 @@ const auth_router_1 = require("../modules/auth/auth.router");
 const user_route_1 = require("../modules/user/user.route");
 const recipe_route_1 = require("../modules/recipe/recipe.route");
 const plan_router_1 = require("../modules/mealPlan/plan.router");
+const sequence_route_1 = require("../modules/sequencePlan/sequence.route");
+const prep_router_1 = require("../modules/prepList/prep.router");
+const grocery_route_1 = require("../modules/groceryList/grocery.route");
 exports.router = (0, express_1.Router)();
 exports.router.use('/auth', auth_router_1.authRoute);
 exports.router.use('/user', user_route_1.userRoute);
 exports.router.use('/recipe', recipe_route_1.recipeRoute);
+exports.router.use('/preplist', prep_router_1.prepListRoute);
 exports.router.use('/mealplan', plan_router_1.mealPlanRoute);
+exports.router.use('/sequence', sequence_route_1.sequenceMealRoute);
+exports.router.use('/grocery', grocery_route_1.groceryRoute);
 exports.router.get('/', (req, res) => {
     res.json({ title: 'hello world welcome to freshBite server' });
 });

@@ -41,7 +41,7 @@ const RecipeSchema = new mongoose_1.Schema({
         required: [true, 'isDone status is required'],
         default: false,
     },
-});
+}, { _id: false });
 const PrepListSchema = new mongoose_1.Schema({
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,

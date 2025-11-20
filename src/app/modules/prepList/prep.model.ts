@@ -8,7 +8,7 @@ const RecipeSchema: Schema = new Schema<Trecipe>({
     required: [true, 'isDone status is required'],
     default: false,
   },
-});
+}, {_id:false});
 
 const PrepListSchema: Schema = new Schema<TprepList>(
   {

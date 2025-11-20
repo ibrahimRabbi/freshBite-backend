@@ -10,6 +10,7 @@ cloudinary.config({
 
 export const uploadImage = async (imagePath: string, imageName: string) => {
     try {
+        
         const declarImageDetail = {
             public_id: imageName,
             overwrite: true

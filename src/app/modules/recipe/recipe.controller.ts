@@ -3,12 +3,12 @@ import { catchAsync } from "../../helper/catchAsync";
 import { recipeModel } from "./recipe.model";
 import status from "http-status";
 import { uploadImage } from "../../helper/imageUploader";
-
-
+import { uploadVideo } from "../../helper/videoUpload";
 
 
 
 export const createrecipeController: RequestHandler = catchAsync(async (req, res, next) => {
+
 
     try {
         if (req?.user?.role !== 'admin') {
@@ -21,23 +21,17 @@ export const createrecipeController: RequestHandler = catchAsync(async (req, res
         }
 
         const imageNamePrefix = `${req?.body?.title}_${Math.random().toString().split('.')[1]}`;
-        const fileNames = req?.files ? Object.keys(req.files) : [];
+        const RecipeImagefiles = Array.isArray(req?.files) ? (req.files as Express.Multer.File[]) : (req?.files as { [fieldname: string]: Express.Multer.File[] })?.recipeimages;
 
 
-        const imageUrls = await Promise.all(
-            fileNames.map(async (name: string) => {
-                const imagePath = (req.files as { [key: string]: { path: string }[] })?.[name]?.[0]?.path;
-
-                if (imagePath) {
-                    const result = await uploadImage(imagePath, `${imageNamePrefix}_${name}`);
-                    return result.secure_url;
-                }
-                return null;
+        const recipeimageUrls = await Promise.all(
+            RecipeImagefiles.map(async (file) => {
+                const result = await uploadImage(file?.path, `${imageNamePrefix}`);
+                return result.secure_url;
             })
         );
 
-        const validImageUrls = imageUrls.filter(url => url !== null);
-        (req.body as any).images = validImageUrls;
+        req.body = { ...(req.body || {}), recipeImages: recipeimageUrls };
 
 
         const creating = await recipeModel.create(req?.body)
@@ -58,6 +52,27 @@ export const createrecipeController: RequestHandler = catchAsync(async (req, res
         throw new Error(err?.message)
     }
 });
+
+export const videoUploadController: RequestHandler = catchAsync(async (req, res, next) => {
+
+    const imageNamePrefix = (Math.random() * 90000).toString().split('.')[1]
+
+
+    if (req?.file?.path) {
+        const result = await uploadVideo(req?.file?.path, `${imageNamePrefix}`);
+         console.log(result)
+
+        res.status(status.OK).json({
+            success: true,
+            status: status.OK,
+            message: 'recipe created successfully',
+           url: (result as any)?.secure_url
+        }) 
+    }else{
+        throw new Error('invalid file path')
+    }
+
+})
 
 export const getSingleRecipeController: RequestHandler = catchAsync(async (req, res, next) => {
     const finding = await recipeModel.findById(req?.params?.id)
@@ -91,8 +106,8 @@ export const getAllRecipeController: RequestHandler = catchAsync(async (req, res
 export const updateRecipeController: RequestHandler = catchAsync(async (req, res, next) => {
 
     if (req?.user?.role !== 'admin') {
-            throw new Error('Unauthorized Access')
-        }
+        throw new Error('Unauthorized Access')
+    }
 
 
 
@@ -112,10 +127,10 @@ export const updateRecipeController: RequestHandler = catchAsync(async (req, res
 export const deleteRecipeController: RequestHandler = catchAsync(async (req, res, next) => {
 
     if (req?.user?.role !== 'admin') {
-            throw new Error('Unauthorized Access')
-        }
+        throw new Error('Unauthorized Access')
+    }
 
-    const updating = await recipeModel.findByIdAndUpdate(req?.params?.id, {isDeleted:true}, { new: true, runValidators: true, context: 'query' })
+    const updating = await recipeModel.findByIdAndUpdate(req?.params?.id, { isDeleted: true }, { new: true, runValidators: true, context: 'query' })
     if (!updating) {
         throw new Error('faild to create user')
     }
