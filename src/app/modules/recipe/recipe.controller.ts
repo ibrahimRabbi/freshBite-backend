@@ -60,15 +60,15 @@ export const videoUploadController: RequestHandler = catchAsync(async (req, res,
 
     if (req?.file?.path) {
         const result = await uploadVideo(req?.file?.path, `${imageNamePrefix}`);
-         console.log(result)
+        console.log(result)
 
         res.status(status.OK).json({
             success: true,
             status: status.OK,
             message: 'recipe created successfully',
-           url: (result as any)?.secure_url
-        }) 
-    }else{
+            url: (result as any)?.secure_url
+        })
+    } else {
         throw new Error('invalid file path')
     }
 
@@ -131,6 +131,44 @@ export const deleteRecipeController: RequestHandler = catchAsync(async (req, res
     }
 
     const updating = await recipeModel.findByIdAndUpdate(req?.params?.id, { isDeleted: true }, { new: true, runValidators: true, context: 'query' })
+    if (!updating) {
+        throw new Error('faild to create user')
+    }
+
+    res.status(status.OK).json({
+        success: true,
+        status: status.OK,
+        message: 'recipe updated successfully',
+        data: updating
+    })
+})
+
+export const addReviewController: RequestHandler = catchAsync(async (req, res, next) => {
+
+    const updating = await recipeModel.findByIdAndUpdate(
+        req?.params?.id,
+        { $push: { reviews: { userId: req?.user?._id, ...req.body } } },
+        { new: true, runValidators: true, context: 'query' })
+
+    if (!updating) {
+        throw new Error('faild to create user')
+    }
+
+    res.status(status.OK).json({
+        success: true,
+        status: status.OK,
+        message: 'recipe updated successfully',
+        data: updating
+    })
+})
+
+export const addNoteontroller: RequestHandler = catchAsync(async (req, res, next) => {
+
+    const updating = await recipeModel.findByIdAndUpdate(
+        req?.params?.id,
+        { $push: { notes: { userId: req?.user?._id, ...req.body } } },
+        { new: true, runValidators: true, context: 'query' })
+
     if (!updating) {
         throw new Error('faild to create user')
     }

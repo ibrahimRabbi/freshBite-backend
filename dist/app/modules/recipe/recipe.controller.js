@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteRecipeController = exports.updateRecipeController = exports.getAllRecipeController = exports.getSingleRecipeController = exports.videoUploadController = exports.createrecipeController = void 0;
+exports.addNoteontroller = exports.addReviewController = exports.deleteRecipeController = exports.updateRecipeController = exports.getAllRecipeController = exports.getSingleRecipeController = exports.videoUploadController = exports.createrecipeController = void 0;
 const catchAsync_1 = require("../../helper/catchAsync");
 const recipe_model_1 = require("./recipe.model");
 const http_status_1 = __importDefault(require("http-status"));
@@ -114,6 +114,32 @@ exports.deleteRecipeController = (0, catchAsync_1.catchAsync)((req, res, next) =
         throw new Error('Unauthorized Access');
     }
     const updating = yield recipe_model_1.recipeModel.findByIdAndUpdate((_b = req === null || req === void 0 ? void 0 : req.params) === null || _b === void 0 ? void 0 : _b.id, { isDeleted: true }, { new: true, runValidators: true, context: 'query' });
+    if (!updating) {
+        throw new Error('faild to create user');
+    }
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        status: http_status_1.default.OK,
+        message: 'recipe updated successfully',
+        data: updating
+    });
+}));
+exports.addReviewController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const updating = yield recipe_model_1.recipeModel.findByIdAndUpdate((_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.id, { $push: { reviews: Object.assign({ userId: (_b = req === null || req === void 0 ? void 0 : req.user) === null || _b === void 0 ? void 0 : _b._id }, req.body) } }, { new: true, runValidators: true, context: 'query' });
+    if (!updating) {
+        throw new Error('faild to create user');
+    }
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        status: http_status_1.default.OK,
+        message: 'recipe updated successfully',
+        data: updating
+    });
+}));
+exports.addNoteontroller = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const updating = yield recipe_model_1.recipeModel.findByIdAndUpdate((_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.id, { $push: { notes: Object.assign({ userId: (_b = req === null || req === void 0 ? void 0 : req.user) === null || _b === void 0 ? void 0 : _b._id }, req.body) } }, { new: true, runValidators: true, context: 'query' });
     if (!updating) {
         throw new Error('faild to create user');
     }

@@ -90,6 +90,16 @@ const userSchema = new mongoose_1.Schema({
         },
         default: 'guest',
     },
+    transectionId: { type: String, default: null },
+    expiredAt: { type: Date, default: null },
+    subscriptionStatus: {
+        type: String,
+        enum: {
+            values: ['active', 'inactive'],
+            message: '{VALUE} is invalid subscription status',
+        },
+        default: 'inactive',
+    },
     role: {
         type: String,
         required: [true, 'Role is required'],
@@ -113,6 +123,7 @@ const userSchema = new mongoose_1.Schema({
             default: true,
         },
     },
+    parentId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', default: 'parent' },
     isActive: { type: Boolean, default: true, },
     isDeleted: { type: Boolean, default: false, }
 }, { timestamps: true, strict: 'throw' });

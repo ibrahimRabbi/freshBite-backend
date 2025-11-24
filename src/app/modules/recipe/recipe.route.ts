@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { createrecipeController, deleteRecipeController, getAllRecipeController, getSingleRecipeController, updateRecipeController, videoUploadController } from "./recipe.controller";
+import { addNoteontroller, addReviewController, createrecipeController, deleteRecipeController, getAllRecipeController, getSingleRecipeController, updateRecipeController, videoUploadController } from "./recipe.controller";
 import { authentication } from "../../middleware/authentication";
 import { placeFile } from "../../helper/fileparser";
 
@@ -38,4 +38,8 @@ recipeRoute.get('/get-all-recipe', authentication, getAllRecipeController)
 recipeRoute.patch('/update-recipe/:id', authentication, updateRecipeController)
 
 recipeRoute.patch('/delete-recipe/:id', authentication, deleteRecipeController)
+
+recipeRoute.patch('/add-review/:id', authentication, addReviewController)
+
+recipeRoute.patch('/add-note/:id', authentication, addNoteontroller)
 

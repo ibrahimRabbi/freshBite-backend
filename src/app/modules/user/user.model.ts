@@ -32,7 +32,7 @@ const userSchema = new Schema<Tuser>({
         type: String,
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters'],
-         match: [
+        match: [
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
             'Password must include uppercase, lowercase, number, and special character'
         ],
@@ -40,7 +40,7 @@ const userSchema = new Schema<Tuser>({
     },
     profileImage: {
         type: String,
-       default: 'https://res.cloudinary.com/dymnrefpr/image/upload/v1757822614/qzvkz2mczodyvwasqtlk.jpg',
+        default: 'https://res.cloudinary.com/dymnrefpr/image/upload/v1757822614/qzvkz2mczodyvwasqtlk.jpg',
         validate: {
             validator: function (value: string) {
                 return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif))$/.test(value);
@@ -55,6 +55,16 @@ const userSchema = new Schema<Tuser>({
             message: '{VALUE} is invalid subscription plan',
         },
         default: 'guest',
+    },
+    transectionId: { type: String, default: null },
+    expiredAt: { type: Date, default: null },
+    subscriptionStatus: {
+        type: String,
+        enum: {
+            values: ['active', 'inactive'],
+            message: '{VALUE} is invalid subscription status',
+        },
+        default: 'inactive',
     },
     role: {
         type: String,
@@ -79,9 +89,10 @@ const userSchema = new Schema<Tuser>({
             default: true,
         },
     },
+    parentId: { type: Schema.Types.ObjectId, ref: 'users', default: 'parent' },
     isActive: { type: Boolean, default: true, },
     isDeleted: { type: Boolean, default: false, }
-}, { timestamps: true, strict: 'throw'})
+}, { timestamps: true, strict: 'throw' })
 
 
 

@@ -19,6 +19,7 @@ const config_1 = require("./app/config/config");
 const globalError_1 = require("./app/middleware/globalError");
 const notFound_1 = require("./app/middleware/notFound");
 const router_1 = require("./app/router");
+const subscriptionAutoExpired_1 = require("./app/helper/subscriptionAutoExpired");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3000', 'http://localhost:5173'],
@@ -30,6 +31,7 @@ app.use('/api/v1', router_1.router);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield mongoose_1.default.connect(config_1.envData.databaseUrl);
+        (0, subscriptionAutoExpired_1.SubscriptionWillBeExpired)();
         app.listen(config_1.envData.port, () => {
             console.log(`server in running on ${config_1.envData.port}`);
         });

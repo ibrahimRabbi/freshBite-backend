@@ -1,4 +1,3 @@
-import { Send } from './../node_modules/@types/express-serve-static-core/index.d';
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
@@ -6,6 +5,7 @@ import { envData } from './app/config/config'
 import { globalErrorHandler } from './app/middleware/globalError'
 import { notFound } from './app/middleware/notFound'
 import { router } from './app/router'
+import { SubscriptionWillBeExpired } from './app/helper/subscriptionAutoExpired';
 
 const app = express()
 
@@ -24,6 +24,8 @@ app.use('/api/v1', router)
 
 async function main() {
   await mongoose.connect(envData.databaseUrl as string);
+
+  SubscriptionWillBeExpired()
 
   app.listen(envData.port, () => {
     console.log(`server in running on ${envData.port}`)

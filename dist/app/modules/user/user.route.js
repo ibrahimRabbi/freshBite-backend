@@ -9,3 +9,6 @@ exports.userRoute.post('/create-user', user_controller_1.createUserController);
 exports.userRoute.get('/get-single-user/:id', authentication_1.authentication, user_controller_1.getSingleUserController);
 exports.userRoute.get('/get-all-user', authentication_1.authentication, user_controller_1.getAllUserController);
 exports.userRoute.patch('/delete-user/:id', authentication_1.authentication, user_controller_1.deleteUserController);
+exports.userRoute.patch('/subscription', authentication_1.authentication, user_controller_1.subscriptionController);
+exports.userRoute.post('/create-child', authentication_1.authentication, user_controller_1.createChildController);
+exports.userRoute.get('/get-child', authentication_1.authentication, user_controller_1.getChildController);

@@ -18,3 +18,5 @@ exports.recipeRoute.get('/get-single-recipe/:id', authentication_1.authenticatio
 exports.recipeRoute.get('/get-all-recipe', authentication_1.authentication, recipe_controller_1.getAllRecipeController);
 exports.recipeRoute.patch('/update-recipe/:id', authentication_1.authentication, recipe_controller_1.updateRecipeController);
 exports.recipeRoute.patch('/delete-recipe/:id', authentication_1.authentication, recipe_controller_1.deleteRecipeController);
+exports.recipeRoute.patch('/add-review/:id', authentication_1.authentication, recipe_controller_1.addReviewController);
+exports.recipeRoute.patch('/add-note/:id', authentication_1.authentication, recipe_controller_1.addNoteontroller);

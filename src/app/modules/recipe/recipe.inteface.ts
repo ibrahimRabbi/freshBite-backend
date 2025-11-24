@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 // Basic ingredient type
 interface Ingredient {
   name: string;
@@ -10,6 +12,7 @@ interface RecipeIngredient {
   name: string;
   unit: string;
   value: string;
+  category: string;
 }
 
  
@@ -20,10 +23,10 @@ interface RecipeTime {
 }
 
  
-interface Review {
+interface Treview {
   rating: number;
   review: string;
-  userId: string;
+  userId: Types.ObjectId;
   isDeleted: boolean;
 }
 
@@ -58,7 +61,7 @@ interface Recipe {
   instruction: Tinstruction[];
   required_skill : [string];
   time: RecipeTime;
-  reviews: Review[];
+  reviews: Treview[];
   notes: Note[];
   isDeleted : boolean
 }
@@ -68,7 +71,7 @@ export type {
   Ingredient,
   RecipeIngredient,
   RecipeTime,
-  Review,
+  Treview,
   Note,
   NutritionValue,
   Tinstruction,

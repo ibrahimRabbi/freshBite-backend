@@ -18,7 +18,7 @@ export const creatGroceryController: RequestHandler = catchAsync(async (req, res
 })
 
 export const getGroceryController: RequestHandler = catchAsync(async (req, res, next) => {
-    const creating = await groceryModel.find({ userId: req?.user?._id })
+    const creating = await groceryModel.find({ userId: req?.user?._id }).populate('recipes')
     if (!creating) {
         throw new Error('faild to get grogery Data')
     }

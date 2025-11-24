@@ -52,7 +52,8 @@ exports.RecipeIngredientSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'Value is required'],
         match: [/^\d+(\.\d+)?$/, 'Value must be a valid number'] // regex for numeric values
-    }
+    },
+    category: { type: String, required: [true, 'Category is required'], }
 });
 // RecipeTime Schema
 const RecipeTimeSchema = new mongoose_1.Schema({
@@ -83,10 +84,11 @@ const ReviewSchema = new mongoose_1.Schema({
     review: {
         type: String,
         required: [true, 'Review text is required'],
+        default: '',
         minlength: [10, 'Review should be at least 10 characters long']
     },
     userId: {
-        type: String,
+        type: mongoose_1.Schema.Types.ObjectId,
         required: [true, 'User ID is required']
     },
     isDeleted: {

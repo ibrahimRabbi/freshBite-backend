@@ -1,10 +1,10 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { Recipe, Tinstruction } from './recipe.inteface';
+import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Recipe, RecipeIngredient, Tinstruction, Treview } from './recipe.inteface';
 
 
 
 // RecipeIngredient Schema
-export const RecipeIngredientSchema: Schema = new Schema({
+export const RecipeIngredientSchema: Schema = new Schema<RecipeIngredient>({
     name: {
         type: String,
         required: [true, 'Ingredient name is required'],
@@ -20,7 +20,8 @@ export const RecipeIngredientSchema: Schema = new Schema({
         type: String,
         required: [true, 'Value is required'],
         match: [/^\d+(\.\d+)?$/, 'Value must be a valid number'] // regex for numeric values
-    }
+    },
+    category : { type: String, required: [true, 'Category is required'], }
 });
 
 // RecipeTime Schema
@@ -43,7 +44,7 @@ const RecipeTimeSchema: Schema = new Schema({
 });
 
 // Review Schema
-const ReviewSchema: Schema = new Schema({
+const ReviewSchema: Schema = new Schema<Treview>({
     rating: {
         type: Number,
         required: [true, 'Rating is required'],
@@ -53,10 +54,11 @@ const ReviewSchema: Schema = new Schema({
     review: {
         type: String,
         required: [true, 'Review text is required'],
+        default: '',    
         minlength: [10, 'Review should be at least 10 characters long']
     },
     userId: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: [true, 'User ID is required']
     },
     isDeleted: {
