@@ -8,7 +8,7 @@ const fileparser_1 = require("../../helper/fileparser");
 exports.recipeRoute = (0, express_1.Router)();
 exports.recipeRoute.post('/create-recipe', fileparser_1.placeFile.fields([
     { name: 'recipeimages', maxCount: 4 },
-    { name: 'skillsVideo', maxCount: 20 },
+    // { name: 'skillsVideo', maxCount: 20 },
 ]), (req, res, next) => {
     req.body = JSON.parse(req.body.data);
     next();

@@ -12,7 +12,7 @@ recipeRoute.post(
 
     placeFile.fields([
         { name: 'recipeimages', maxCount: 4 },
-        { name: 'skillsVideo', maxCount: 20 },
+        // { name: 'skillsVideo', maxCount: 20 },
     ]),
 
     (req: Request, res: Response, next: NextFunction) => {

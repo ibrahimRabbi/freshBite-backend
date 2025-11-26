@@ -31,7 +31,7 @@ export const createrecipeController: RequestHandler = catchAsync(async (req, res
             })
         );
 
-        req.body = { ...(req.body || {}), recipeImages: recipeimageUrls };
+        req.body = { ...(req.body || {}), images: recipeimageUrls };
 
 
         const creating = await recipeModel.create(req?.body)

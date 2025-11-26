@@ -8,6 +8,8 @@ import { prepListRoute } from "../modules/prepList/prep.router";
 import { groceryRoute } from "../modules/groceryList/grocery.route";
 import { shoppingListRoute } from "../modules/shoppingList/shopping.route";
 import { subscriptionRoute } from "../modules/subscription/subs.route";
+import { userRecipeRoute } from "../modules/userRecipes/userRecipe.route";
+import { settingsRoute } from "../modules/settings/settings.route";
 
 
 export const router = Router()
@@ -21,6 +23,8 @@ router.use('/sequence', sequenceMealRoute)
 router.use('/grocery', groceryRoute)
 router.use ('/shopping', shoppingListRoute)
 router.use ('/subscription', subscriptionRoute)
+router.use ('/userRecipe', userRecipeRoute)
+router.use ('/settings', settingsRoute)
 
 router.get('/', (req, res) => {
     res.json({ title: 'hello world welcome to freshBite server' })

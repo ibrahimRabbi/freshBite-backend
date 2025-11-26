@@ -9,7 +9,6 @@ import { generateSlugId } from "../../helper/slugGenerator";
  
 
 
-
 export const createUserController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const createUser = await createUserServices(req?.body)

@@ -34,7 +34,7 @@ exports.createrecipeController = (0, catchAsync_1.catchAsync)((req, res, next) =
             const result = yield (0, imageUploader_1.uploadImage)(file === null || file === void 0 ? void 0 : file.path, `${imageNamePrefix}`);
             return result.secure_url;
         })));
-        req.body = Object.assign(Object.assign({}, (req.body || {})), { recipeImages: recipeimageUrls });
+        req.body = Object.assign(Object.assign({}, (req.body || {})), { images: recipeimageUrls });
         const creating = yield recipe_model_1.recipeModel.create(req === null || req === void 0 ? void 0 : req.body);
         if (!creating) {
             throw new Error('faild to create recipe');

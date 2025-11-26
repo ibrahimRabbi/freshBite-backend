@@ -47,7 +47,6 @@ interface Tinstruction {
   title: string,
   videoUrl : string
 }
-
  
 interface Recipe {
   title: string;
