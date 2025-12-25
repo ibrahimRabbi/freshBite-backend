@@ -44,6 +44,23 @@ export const verifyOtpController: RequestHandler = catchAsync(async (req, res, n
 
 })
 
+export const resetPasswordController: RequestHandler = catchAsync(async (req, res, next) => {
+
+     const resetPassword = await userModel.findByIdAndUpdate(req?.body?.userId, {password:req.body?.newPassword}, { new: true, runValidators: true, context: 'query' })
+    
+    if (!resetPassword) {
+        throw new Error('faild to update password')
+    }
+
+    res.status(status.OK).json({
+        success: true,
+        status: status.OK,
+        message: "profile has been updated",
+        data : resetPassword
+    });
+
+})
+
 export const updateProfileController: RequestHandler = catchAsync(async (req, res, next) => {
 
     const updating = await updateUserServices(req)

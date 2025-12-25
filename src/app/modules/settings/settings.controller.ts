@@ -45,11 +45,12 @@ export const updateSettingsController: RequestHandler = catchAsync(async (req, r
         throw new Error("unauthorized to update settings");
     }
 
-    if (!req.query?.title) {
+    if (!req.body?.setting_title) {
         throw new Error("Setting title is required for update");
     }
+    
     const updateSettings = await SettingsModel.findOneAndUpdate(
-        { setting_title: req.query?.title },
+        { setting_title: req.body?.setting_title },
         { value: req.body.value },
         { new: true, runValidators: true }
     );

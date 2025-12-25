@@ -20,7 +20,12 @@ const globalError_1 = require("./app/middleware/globalError");
 const notFound_1 = require("./app/middleware/notFound");
 const router_1 = require("./app/router");
 const subscriptionAutoExpired_1 = require("./app/helper/subscriptionAutoExpired");
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = require("socket.io");
+const conversation_controller_1 = require("./app/modules/conversation/conversation.controller");
 const app = (0, express_1.default)();
+const httpServer = http_1.default.createServer(app);
+const io = new socket_io_1.Server(httpServer);
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3000', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -32,7 +37,14 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield mongoose_1.default.connect(config_1.envData.databaseUrl);
         (0, subscriptionAutoExpired_1.SubscriptionWillBeExpired)();
-        app.listen(config_1.envData.port, () => {
+        io.on("connection", (socket) => {
+            console.log('socket connect with server');
+            (0, conversation_controller_1.conversationController)(io, socket);
+            socket.on("disconnect", () => __awaiter(this, void 0, void 0, function* () {
+                console.log("A user disconnected");
+            }));
+        });
+        httpServer.listen(config_1.envData.port, () => {
             console.log(`server in running on ${config_1.envData.port}`);
         });
     });
@@ -40,3 +52,16 @@ function main() {
 app.use(globalError_1.globalErrorHandler);
 app.use(notFound_1.notFound);
 main();
+//   try {
+//     if (userId) {
+//       await userModel.findByIdAndUpdate(
+//         userId,
+//         { isActive: false },
+//         { runValidators: true, context: "query" }
+//       );
+//     }
+//     console.log("A user disconnected:", userId);
+//   } catch (err) {
+//     console.error("Error on disconnect update:", err);
+//   }
+// });

@@ -19,9 +19,8 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const otpGenarator_1 = require("../../helper/otpGenarator");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const emailTemplete_1 = require("../../helper/emailTemplete");
-const imageUploader_1 = require("../../helper/imageUploader");
 const signInService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const checkExistancy = yield user_model_1.default.findOne({ email: payload.email }).select('name email password role planType isDeleted');
+    const checkExistancy = yield user_model_1.default.findOne({ email: payload.email }).select('name email gender password role isDeleted');
     if (!checkExistancy) {
         throw new Error('user is not exist');
     }
@@ -32,11 +31,10 @@ const signInService = (payload) => __awaiter(void 0, void 0, void 0, function* (
         throw new Error('unthorized user');
     }
     const credentials = {
-        name: checkExistancy.fullName,
+        name: checkExistancy.name,
         email: checkExistancy.email,
-        slug_id: checkExistancy.slug_id,
+        gender: checkExistancy.gender,
         role: checkExistancy.role,
-        planType: checkExistancy.planType
     };
     if (payload.remember) {
         const accessToken = jsonwebtoken_1.default.sign(credentials, config_1.envData.secretKey, { expiresIn: '12d' });
@@ -81,7 +79,8 @@ const forgetPasswordService = (req) => __awaiter(void 0, void 0, void 0, functio
         throw new Error('faild to send email');
     }
     const credentials = {
-        name: checkBefore.fullName,
+        name: checkBefore.name,
+        userId: checkBefore === null || checkBefore === void 0 ? void 0 : checkBefore._id,
         otpCode: otpCode
     };
     const verificationToken = jsonwebtoken_1.default.sign(credentials, config_1.envData.secretKey, { expiresIn: '3m' });
@@ -106,6 +105,7 @@ const verifyOtpServices = (req) => __awaiter(void 0, void 0, void 0, function* (
         if ((decodeUser === null || decodeUser === void 0 ? void 0 : decodeUser.otpCode) !== ((_b = req.body) === null || _b === void 0 ? void 0 : _b.otpCode)) {
             throw new Error('invalid otp');
         }
+        return decodeUser === null || decodeUser === void 0 ? void 0 : decodeUser.userId;
     }
     catch (err) {
         if (err.name === 'TokenExpiredError') {
@@ -116,23 +116,23 @@ const verifyOtpServices = (req) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.verifyOtpServices = verifyOtpServices;
 const updateUserServices = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
-    const data = JSON.parse(req === null || req === void 0 ? void 0 : req.body.data);
-    const imageNamePrefix = `${(_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.fullName}_${Math.random().toString().split('.')[1]}`;
-    const imagePath = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
-    if (imagePath) {
-        const result = yield (0, imageUploader_1.uploadImage)(imagePath, imageNamePrefix);
-        data.profileImage = result.secure_url;
-    }
-    const updating = yield user_model_1.default.findByIdAndUpdate((_c = req === null || req === void 0 ? void 0 : req.user) === null || _c === void 0 ? void 0 : _c._id, data, { new: true, runValidators: true, context: 'query' });
+    // const data = JSON.parse(req?.body.data)
+    var _a;
+    // const imageNamePrefix = `${req?.user?.name}_${Math.random().toString().split('.')[1]}`;
+    // const imagePath = req.file?.path;
+    // if (imagePath) {
+    //     const result = await uploadImage(imagePath, imageNamePrefix);
+    //     data.profileImage = result.secure_url;
+    // }
+    const updating = yield user_model_1.default.findByIdAndUpdate((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._id, req === null || req === void 0 ? void 0 : req.body, { new: true, runValidators: true, context: 'query' });
     if (!updating) {
         throw new Error('faild to update user');
     }
     const credentials = {
-        name: updating.fullName,
+        name: updating.name,
         email: updating.email,
         role: updating.role,
-        planType: updating.planType
+        gender: updating.gender
     };
     const accessToken = jsonwebtoken_1.default.sign(credentials, config_1.envData.secretKey, { expiresIn: '12d' });
     return accessToken;

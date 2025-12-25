@@ -38,18 +38,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const validator_1 = __importDefault(require("validator"));
+const addressSchema = new mongoose_1.Schema({
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], default: [0, 0] }
+}, { _id: false });
 const userSchema = new mongoose_1.Schema({
-    fullName: {
+    name: {
         type: String,
-        required: [true, 'Full name is required'],
+        required: [true, 'Name is required'],
         trim: true,
-        minlength: [3, 'Full name must be at least 3 characters'],
-        maxlength: [100, 'Full name cannot exceed 100 characters'],
+        minlength: [3, 'Name must be at least 3 characters'],
+        maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: [true, 'this user already exist'],
+        unique: [true, 'user already exists, Email must be unique'],
         validate: [validator_1.default.isEmail, 'Invalid email format'],
     },
     phoneNumber: {
@@ -77,29 +81,122 @@ const userSchema = new mongoose_1.Schema({
         default: 'https://res.cloudinary.com/dymnrefpr/image/upload/v1757822614/qzvkz2mczodyvwasqtlk.jpg',
         validate: {
             validator: function (value) {
-                return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif))$/.test(value);
+                return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/.test(value);
             },
             message: 'Invalid profile image URL',
         },
     },
+    photos: [{
+            type: String,
+            validate: {
+                validator: function (value) {
+                    return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/.test(value);
+                },
+                message: 'Invalid photo URL',
+            },
+            default: []
+        }],
+    address: {
+        type: addressSchema,
+        required: true,
+        default: {
+            type: 'Point',
+            coordinates: [0, 0]
+        }
+    },
+    birthDay: {
+        type: Date,
+        default: null,
+    },
+    age: { type: Number, default: null },
+    gender: {
+        type: String,
+        required: [true, 'Gender is required'],
+        enum: {
+            values: ['male', 'female'],
+            message: '{VALUE} is not a valid gender',
+        },
+        default: "male"
+    },
+    height: {
+        unit: {
+            type: String,
+            enum: {
+                values: ['cm', 'ft'],
+                message: '{VALUE} is not a valid height unit',
+            },
+            default: 'cm'
+        },
+        value: {
+            type: Number,
+            default: 0,
+        },
+    },
+    orientation: {
+        type: String,
+        required: [true, 'Orientation is required'],
+        enum: {
+            values: ['loseWeight', 'maintainWeight', 'gainWeight', 'notSpecified'],
+            message: '{VALUE} is not a valid orientation',
+        },
+        default: 'notSpecified'
+    },
+    relationshipStatus: {
+        type: String,
+        required: [true, 'Relationship status is required'],
+        enum: {
+            values: ['single', 'married', 'complicated', 'preferNotToSay', 'divorced', 'widowed', 'separated', 'inARelationship', 'engaged'],
+            message: '{VALUE} is not a valid relationship status',
+        },
+        default: 'preferNotToSay'
+    },
+    aboutMe: {
+        type: String,
+        default: '',
+    },
+    socialLinks: {
+        facebook: String,
+        twitter: String,
+        instagram: String,
+        linkedIn: String,
+        pinterest: String,
+        youtube: String,
+        website: String,
+    },
+    savedUser: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'usersTrees', default: [] },
+    blockedUsers: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'usersTrees',
+        }],
+    blockedMe: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'usersTrees',
+        }],
     planType: {
         type: String,
         enum: {
-            values: ['premium', 'family', 'guest', 'trial'],
-            message: '{VALUE} is invalid subscription plan',
+            values: ['basic', 'premium', 'trial'],
+            message: '{VALUE} is not a valid plan type',
         },
-        default: 'guest',
+        default: 'basic'
     },
-    transectionId: { type: String, default: null },
-    expiredAt: { type: Date, default: null },
+    expiredAt: {
+        type: Date,
+        default: null,
+    },
     subscriptionStatus: {
         type: String,
         enum: {
             values: ['active', 'inactive'],
-            message: '{VALUE} is invalid subscription status',
+            message: '{VALUE} is not a valid subscription status',
         },
-        default: 'inactive',
+        default: 'inactive'
     },
+    transectionId: {
+        type: String,
+        default: null,
+    },
+    topUp: { type: Number, default: 0 },
     role: {
         type: String,
         required: [true, 'Role is required'],
@@ -109,23 +206,25 @@ const userSchema = new mongoose_1.Schema({
         },
         default: 'user'
     },
-    slug_id: {
-        type: String,
-        required: [true, 'Slug ID is required'],
-        unique: [true, 'this user already exist.'],
-        minlength: [6, 'Slug ID must be at least 5 characters'],
-        isDeleted: {
-            type: Boolean,
-            default: false,
-        },
-        isActive: {
-            type: Boolean,
-            default: true,
-        },
+    isDeleted: {
+        type: Boolean,
+        default: false,
     },
-    parentId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'users', default: 'parent' },
-    isActive: { type: Boolean, default: true, },
-    isDeleted: { type: Boolean, default: false, }
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
 }, { timestamps: true, strict: 'throw' });
-const userModel = mongoose_1.default.model('users', userSchema);
+userSchema.index({ address: '2dsphere' });
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ phoneNumber: 1 }, { unique: true });
+userSchema.index({ role: 1 });
+userSchema.index({ isDeleted: 1 });
+userSchema.index({ planType: 1 });
+userSchema.index({ createdAt: -1 });
+const userModel = mongoose_1.default.model('usersTree', userSchema);
 exports.default = userModel;

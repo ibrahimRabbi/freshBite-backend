@@ -1,6 +1,6 @@
 
 export type Tsubscription = {
-    plan: 'premium' | 'family' | 'guest' | 'trial',
+    plan: 'premium' | 'basic' | 'trial',
     duration: 30 | 365 | 7,
     price: number,
     features: string[],

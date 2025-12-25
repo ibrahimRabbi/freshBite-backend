@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMyProfileController = exports.changePasswordController = exports.updateProfileController = exports.verifyOtpController = exports.forgetPasswordController = exports.signInController = void 0;
+exports.getMyProfileController = exports.changePasswordController = exports.updateProfileController = exports.resetPasswordController = exports.verifyOtpController = exports.forgetPasswordController = exports.signInController = void 0;
 const catchAsync_1 = require("../../helper/catchAsync");
 const http_status_1 = __importDefault(require("http-status"));
 const auth_service_1 = require("./auth.service");
@@ -41,6 +41,19 @@ exports.verifyOtpController = (0, catchAsync_1.catchAsync)((req, res, next) => _
         success: true,
         status: http_status_1.default.OK,
         message: "otp verified successfully",
+    });
+}));
+exports.resetPasswordController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const resetPassword = yield user_model_1.default.findByIdAndUpdate((_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.userId, { password: (_b = req.body) === null || _b === void 0 ? void 0 : _b.newPassword }, { new: true, runValidators: true, context: 'query' });
+    if (!resetPassword) {
+        throw new Error('faild to update password');
+    }
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        status: http_status_1.default.OK,
+        message: "profile has been updated",
+        data: resetPassword
     });
 }));
 exports.updateProfileController = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

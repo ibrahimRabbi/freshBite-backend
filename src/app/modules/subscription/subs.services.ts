@@ -3,6 +3,12 @@ import subscriptionModel from "./subs.model";
 
 export const subscriptionServices = {
   createSubscription: async (payload: Tsubscription) => {
+    
+    const checkBefore = await subscriptionModel.findOne({ plan: payload.plan, isDeleted: { $ne: true } });
+    if (checkBefore){
+      throw new Error('Subscription plan already exists');
+    }
+    
     const result = await subscriptionModel.create(payload);
     return result;
   },

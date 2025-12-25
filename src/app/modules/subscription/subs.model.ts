@@ -5,7 +5,7 @@ const subscriptionSchema = new Schema<Tsubscription>({
     plan: {
         type: String,
         enum: {
-            values: ['premium', 'family', 'guest', 'trial'],
+            values: ['premium', 'basic', 'trial'],
             message: '{VALUE} is invalid subscription plan',
         },
         required: [true, 'Subscription plan is required'],

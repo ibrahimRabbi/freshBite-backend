@@ -6,14 +6,14 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { generateOtpCode } from "../../helper/otpGenarator";
 import nodeMailer from "nodemailer";
 import { templeteString } from "../../helper/emailTemplete";
-import { uploadImage } from "../../helper/imageUploader";
+
 
 
 
 
 export const signInService = async (payload: TsignIn) => {
 
-    const checkExistancy = await userModel.findOne({ email: payload.email }).select('name email password role planType isDeleted');
+    const checkExistancy = await userModel.findOne({ email: payload.email }).select('name email gender password role isDeleted');
 
     if (!checkExistancy) {
         throw new Error('user is not exist')
@@ -28,11 +28,10 @@ export const signInService = async (payload: TsignIn) => {
     }
 
     const credentials = {
-        name: checkExistancy.fullName,
+        name: checkExistancy.name,
         email: checkExistancy.email,
-        slug_id: checkExistancy.slug_id,
+        gender: checkExistancy.gender,
         role: checkExistancy.role,
-        planType: checkExistancy.planType
     }
 
     if (payload.remember) {
@@ -83,7 +82,8 @@ export const forgetPasswordService = async (req: Request) => {
     }
 
     const credentials = {
-        name: checkBefore.fullName,
+        name: checkBefore.name,
+        userId: checkBefore?._id,
         otpCode: otpCode
     }
 
@@ -119,6 +119,8 @@ export const verifyOtpServices = async (req: Request) => {
             throw new Error('invalid otp')
         }
 
+        return decodeUser?.userId
+
     } catch (err: any) {
         if (err.name === 'TokenExpiredError') {
             throw new Error("otp code expierd");
@@ -133,32 +135,29 @@ export const verifyOtpServices = async (req: Request) => {
 
 }
 
-
 export const updateUserServices = async (req: Request) => {
-    
-    const data = JSON.parse(req?.body.data)
 
-    const imageNamePrefix = `${req?.user?.fullName}_${Math.random().toString().split('.')[1]}`;
-    const imagePath = req.file?.path;
- 
-    if (imagePath) {
-        
-        const result = await uploadImage(imagePath, imageNamePrefix);
-        data.profileImage = result.secure_url;
-    }
-     
+    // const data = JSON.parse(req?.body.data)
 
-    const updating = await userModel.findByIdAndUpdate(req?.user?._id, data, { new: true, runValidators: true, context: 'query' })
+    // const imageNamePrefix = `${req?.user?.name}_${Math.random().toString().split('.')[1]}`;
+    // const imagePath = req.file?.path;
+
+    // if (imagePath) {
+    //     const result = await uploadImage(imagePath, imageNamePrefix);
+    //     data.profileImage = result.secure_url;
+    // }
+
+
+    const updating = await userModel.findByIdAndUpdate(req?.user?._id, req?.body, { new: true, runValidators: true, context: 'query' })
     if (!updating) {
         throw new Error('faild to update user')
     }
 
-
     const credentials = {
-        name: updating.fullName,
+        name: updating.name,
         email: updating.email,
         role: updating.role,
-        planType: updating.planType
+        gender: updating.gender
     }
 
     const accessToken = jwt.sign(credentials, envData.secretKey as string, { expiresIn: '12d' })

@@ -9,6 +9,7 @@ exports.authRoute = (0, express_1.Router)();
 exports.authRoute.post('/sign-in', auth_controller_1.signInController);
 exports.authRoute.post('/forget-password', auth_controller_1.forgetPasswordController);
 exports.authRoute.post('/verify-otp', auth_controller_1.verifyOtpController);
+exports.authRoute.post('/reset-password', auth_controller_1.resetPasswordController);
 exports.authRoute.get('/get-my-profile', authentication_1.authentication, auth_controller_1.getMyProfileController);
 exports.authRoute.patch('/update-profile', fileparser_1.placeFile.single('profile'), authentication_1.authentication, auth_controller_1.updateProfileController);
 exports.authRoute.patch('/change-password', authentication_1.authentication, auth_controller_1.changePasswordController);

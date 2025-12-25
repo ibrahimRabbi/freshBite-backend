@@ -10,9 +10,7 @@ const settingSchema = new Schema<TSetting>({
         },
         required: true, unique: true
     },
-    value: { type: Schema.Types.Mixed, default: '', required: true },
-}, {
-    timestamps: true,
-})
+    value: { type: String, default: '', required: true },
+}, {timestamps: true,})
 
 export const SettingsModel = mongoose.model<TSetting>('Settings', settingSchema);
